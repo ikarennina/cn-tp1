@@ -2,24 +2,22 @@
 
 import networkx as nx
 
-def get_degree_dist(graph, undirected=True):
+def get_degree_dist(graph):
     """Plot degree distribution of graph.
 
     Args:
         graph: a networkx graph object
-        undirected: boolean indicating if graph is undirected or not (True by
-            default)
 
     Returns:
         degree_dist: A dictionary with degree as keys and count(degree) as
             value, if graph is undirected.
-        degree_dist, in_degree_dist, out_degree_dist: A tuple containing the
-            cummulative degree distribution, the in-degree distribution and the
+        degree_dist, in_degree_dist, out_degree_dist: A tuple of dicts containing
+            the cummulative degree distribution, the in-degree distribution and the
             out-degree distribution, if graph is directed.
     """
     degrees_list = graph.degree().values()
     degree_dist = {v: degrees_list.count(v) for v in degrees_list}
-    if undirected:
+    if not graph.is_directed:
         return degree_dist
     in_degrees_list = graph.in_degree().values()
     in_degree_dist = {v: in_degrees_list.count(v) for v in in_degrees_list}
