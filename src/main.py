@@ -6,14 +6,39 @@ from itertools import permutations
 
 import networkx as nx
 
-def shortest_path(graph, source, target):
-    #TODO(izabela): implement this function instead of using library
-    return nx.shortest_path(graph, source, target)
+
+def all_shortest_paths(graph):
+    """Calculate all-pairs shortest path sizes.
+
+    The all shortest paths are calculated via the Floyd-Warshall algorithm.
+
+    Args:
+        graph: a networkx graph object
+
+    Returns:
+        dist: a matrix in which an element (i, j) contains the shortest distance
+            between i and j. If there is no path between i and j, dist(i, j) =
+            Inf.
+    """
+    size = graph.number_of_nodes()
+    dist = [[float('Inf') for _ in range(size)] for _ in range(size)]
+    for src, target in graph.edges():
+        dist[src][target] = 1
+        if not graph.is_directed():
+            dist[target][src] = 1
+    for i in range(size):
+        dist[i][i] = 0
+    for k in range(size):
+        for i in range(size):
+            for j in range(size):
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
+    return dist
+
 
 #TODO(izabela): Call this function only if the edge is not a bridge
 def get_edge_span(graph, edge):
     """Get the span of an edge.
-    
+
     The span of an edge (u,v) is the size of the shortest path between u and v,
     when (u,v) is removed from the graph.
 
@@ -23,19 +48,21 @@ def get_edge_span(graph, edge):
     Args:
         graph: a networkx graph object
         edge: a tuple (u,v)
-    #TODO(izabela): finish docstring
+
+    Returns:
+        span: size of shortest alternate path
+        Inf: if there is no alternate path
     """
-    u, v = edge
-    queue = deque([u])
-    distances = {u: 0}
-    dist = 0
+    source, target = edge
+    queue = deque([source])
+    distances = {source: 0}
     while queue:
         node = queue.popleft()
-        if node == v:
+        if node == target:
             return distances[node]
         for neigh in graph.neighbors(node):
             #disconsider the edge being evaluated
-            if node == u and neigh == v:
+            if node == source and neigh == target:
                 continue
             if neigh not in distances:
                 distances[neigh] = distances[node] + 1
@@ -43,10 +70,9 @@ def get_edge_span(graph, edge):
     return float('Inf')
 
 
-
 def get_local_cluster_coeff(graph, node_id):
     """Calculate local cluster coefficient.
-    
+
     Args:
         graph: a networkx graph object
         node_id: the id of a node in the graph
@@ -81,9 +107,9 @@ def get_degree_dist(graph):
     Returns:
         degree_dist: A dictionary with degree as keys and count(degree) as
             value, if graph is undirected.
-        degree_dist, in_degree_dist, out_degree_dist: A tuple of dicts containing
-            the cummulative degree distribution, the in-degree distribution and the
-            out-degree distribution, if graph is directed.
+        degree_dist, in_degree_dist, out_degree_dist: A tuple of dicts
+            containing the cummulative degree distribution, the in-degree
+            distribution and the out-degree distribution, if graph is directed.
     """
     degrees_list = graph.degree().values()
     degree_dist = {v: degrees_list.count(v) for v in degrees_list}
