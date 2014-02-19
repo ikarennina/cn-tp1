@@ -1,9 +1,48 @@
 """A module to perform metric calculations in a graph."""
 
+from collections import deque
 from itertools import combinations
 from itertools import permutations
 
 import networkx as nx
+
+def shortest_path(graph, source, target):
+    #TODO(izabela): implement this function instead of using library
+    return nx.shortest_path(graph, source, target)
+
+#TODO(izabela): Call this function only if the edge is not a bridge
+def get_edge_span(graph, edge):
+    """Get the span of an edge.
+    
+    The span of an edge (u,v) is the size of the shortest path between u and v,
+    when (u,v) is removed from the graph.
+
+    This calculatin can be done with a breadth-first search, since we are
+    dealing with non-weighted graphs.
+
+    Args:
+        graph: a networkx graph object
+        edge: a tuple (u,v)
+    #TODO(izabela): finish docstring
+    """
+    u, v = edge
+    queue = deque([u])
+    distances = {u: 0}
+    dist = 0
+    while queue:
+        node = queue.popleft()
+        if node == v:
+            return distances[node]
+        for neigh in graph.neighbors(node):
+            #disconsider the edge being evaluated
+            if node == u and neigh == v:
+                continue
+            if neigh not in distances:
+                distances[neigh] = distances[node] + 1
+                queue.append(neigh)
+    return float('Inf')
+
+
 
 def get_local_cluster_coeff(graph, node_id):
     """Calculate local cluster coefficient.
@@ -15,19 +54,22 @@ def get_local_cluster_coeff(graph, node_id):
     Returns:
         cluster_coeff: The cluster coefficient of the node, calculated as the
             probability of two random neighbors of the node being connected.
+        None: if the node has only one neighbor, the clustering coefficient is
+            undefined and the function returns None.
     """
     neighbors = graph.neighbors(node_id)
     #disconsider self loops
     if node_id in neighbors:
         neighbors.remove(node_id)
-    count = 0
+    if len(neighbors) == 1:
+        return None
+    count = 0.0
     candidates = permutations(neighbors, 2) if graph.is_directed() else \
         combinations(neighbors, 2)
     for edge in candidates:
-        if graph.has_edge(x, y)
+        if graph.has_edge(*edge):
             count += 1
-    cc = count/(len(neighbors) * (len(neighbors) - 1))
-    return cc if graph.is_directed() else 2 * cc
+    return count/(len(neighbors) * (len(neighbors) - 1))
 
 
 def get_degree_dist(graph):
@@ -71,4 +113,5 @@ def main():
 
 
 if __name__ == '__main__':
+    pass
     # main()
