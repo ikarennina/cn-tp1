@@ -17,6 +17,18 @@ class TestMetricsCalculations(unittest.TestCase):
         self.digraph = nx.DiGraph([(0, 0), (0, 1), (1, 2), (2, 3), (3, 2), (3,
             4), (4, 0), (4, 2)])
 
+    def test_connected_component(self):
+        """Test the calculation of distribution of connected components."""
+        result = metrics.get_connected_components_sizes(self.graph)
+        self.assertEqual([5], result)
+
+        three_cc_graph = nx.Graph()
+        three_cc_graph.add_path([0, 1, 2, 3])
+        three_cc_graph.add_path([8, 9, 10])
+        three_cc_graph.add_path([42, 43, 44, 45, 46])
+        result = metrics.get_connected_components_sizes(three_cc_graph)
+        self.assertEqual(set(result), set([4, 3, 5]))
+
     def test_shortest_paths_directed(self):
         """Test all-pairs shortest paths sizes for a directed graph."""
         result = metrics.all_shortest_paths(self.digraph)

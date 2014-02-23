@@ -6,6 +6,33 @@ from itertools import permutations
 
 import networkx as nx
 
+def get_connected_components_sizes(graph):
+    """Get the size of each connected compoent.
+
+    Args:
+        graph: a networkx undirected graph object
+
+    Returns:
+        sizes: a list in which each entry is the size of one of the connected
+            components.
+        None: if the graph passed is directed.
+    """
+    if graph.is_directed():
+        return None
+    nodes = set(graph.nodes())
+    sizes = []
+    while nodes:
+        source = nodes.pop()
+        size = 1
+        queue = deque(graph.neighbors(source))
+        while queue:
+            visited = queue.popleft()
+            nodes.remove(visited)
+            queue.extend([node for node in graph.neighbors(visited) if node in
+                nodes and node not in queue])
+            size += 1
+        sizes.append(size)
+    return sizes
 
 def all_shortest_paths(graph):
     """Calculate all-pairs shortest path sizes.
