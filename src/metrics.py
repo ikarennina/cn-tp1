@@ -3,8 +3,38 @@
 from collections import deque
 from itertools import combinations
 from itertools import permutations
+import matplotlib.pyplot as pl
+import scipy
 
 import networkx as nx
+
+
+def get_neighborhood_overlap(graph):
+    """Get the neighboorhood overlap for each edge.
+
+    The neighboordhood overlap for the edge A and B can be defined as the ratio
+    between the number of nodes which are neighbors of both A and B and the
+    number of nodes which are neighbors of at least one of A and B.
+
+    Args:
+        graph: a networkx graph object
+
+    Returns:
+        overlaps: a dict indexed by an edge (a, b) of the graph (a < b)
+            containing the neighboorhood overlap for that edge. Self-loops are
+            disconsidered.
+    """
+    edges = graph.edges()
+    overlaps = {}
+    for n1, n2 in edges:
+        neigh_n1 = set(graph.neighbors(n1))
+        neigh_n2 = set(graph.neighbors(n2))
+        intersection = neigh_n1.intersection(neigh_n2)
+        union = neigh_n1.union(neigh_n2)
+        neigh_overlap = float(len(intersection))/len(union)
+        overlaps[(n1, n2)] = neigh_overlap
+    return overlaps
+    
 
 def get_connected_components_sizes(graph):
     """Get the size of each connected compoent.
@@ -125,46 +155,23 @@ def get_local_cluster_coeff(graph, node_id):
     return count/(len(neighbors) * (len(neighbors) - 1))
 
 
-def get_degree_dist(graph):
+def get_nodes_degrees(graph):
     """Plot degree distribution of graph.
 
     Args:
         graph: a networkx graph object
 
     Returns:
-        degree_dist: A dictionary with degree as keys and count(degree) as
-            value, if graph is undirected.
-        degree_dist, in_degree_dist, out_degree_dist: A tuple of dicts
-            containing the cummulative degree distribution, the in-degree
-            distribution and the out-degree distribution, if graph is directed.
+        degrees: a list of the degrees of the nodes
+        total_degrees, in_degrees, out_degrees: in the case of a directed network,
+            three lists are returned: one with the total degree of each node, one
+            with the in-degree of each node and another with the out-degree of
+            each node
     """
-    degrees_list = graph.degree().values()
-    degree_dist = {v: degrees_list.count(v) for v in degrees_list}
+    total_degrees = graph.degree().values()
     if not graph.is_directed():
-        return degree_dist
-    in_degrees_list = graph.in_degree().values()
-    in_degree_dist = {v: in_degrees_list.count(v) for v in in_degrees_list}
-    out_degrees_list = graph.out_degree().values()
-    out_degree_dist = {v: out_degrees_list.count(v) for v in out_degrees_list}
-    return degree_dist, in_degree_dist, out_degree_dist
+        return total_degrees
+    in_degrees = graph.in_degree().values()
+    out_degrees = graph.out_degree().values()
+    return total_degrees, in_degrees, out_degrees
 
-
-def main():
-    """"Main function of the module."""
-   # read_input()
-   # plot_degree_dist(graph)
-   # plot_clust_coeff()
-   # plot_connected_comp_dist()
-   # plot_neigh_overlap_dist()
-   # plot_distance_dist()
-   # plot_edges_betweeness()
-   # plot_nodes_betweeness()
-   # find_bridges()
-   # plot_graph()
-
-
-
-
-if __name__ == '__main__':
-    pass
-    # main()

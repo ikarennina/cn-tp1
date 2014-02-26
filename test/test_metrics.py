@@ -17,6 +17,20 @@ class TestMetricsCalculations(unittest.TestCase):
         self.digraph = nx.DiGraph([(0, 0), (0, 1), (1, 2), (2, 3), (3, 2), (3,
             4), (4, 0), (4, 2)])
 
+    def test_neighboorhood_overlap_directed(self):
+        """Test calculation of neighboorhood overlap for directed graph."""
+        result = metrics.get_neighborhood_overlap(self.digraph)
+        expected = {(0, 0): 1.0, (0, 1): 0.0, (1, 2): 0.0, (2, 3): 0.0, (3, 2):
+                0.0, (3, 4): 1.0/3, (4, 0): 1.0/3, (4, 2): 0.0}
+        self.assertEqual(expected, result)
+
+    def test_neighboorhood_overlap_undirected(self):
+        """Test calculation of neighboorhood overlap for undirected graph."""
+        result = metrics.get_neighborhood_overlap(self.graph)
+        expected = {(0, 1): 1.0/5, (0, 2): 1.0/5, (0, 4): 0.0, (1, 2): 2.0/4, (1,
+            3): 1.0/5, (2, 3): 1.0/5, (3, 4): 0.0}
+        self.assertEqual(expected, result)
+
     def test_connected_component(self):
         """Test the calculation of distribution of connected components."""
         result = metrics.get_connected_components_sizes(self.graph)
