@@ -64,32 +64,9 @@ def get_connected_components_sizes(graph):
         sizes.append(size)
     return sizes
 
-def all_shortest_paths(graph):
-    """Calculate all-pairs shortest path sizes.
 
-    The all shortest paths are calculated via the Floyd-Warshall algorithm.
-
-    Args:
-        graph: a networkx graph object
-
-    Returns:
-        dist: a matrix in which an element (i, j) contains the shortest distance
-            between i and j. If there is no path between i and j, dist(i, j) =
-            Inf.
-    """
-    size = graph.number_of_nodes()
-    dist = [[float('Inf') for _ in range(size)] for _ in range(size)]
-    for src, target in graph.edges():
-        dist[src][target] = 1
-        if not graph.is_directed():
-            dist[target][src] = 1
-    for i in range(size):
-        dist[i][i] = 0
-    for k in range(size):
-        for i in range(size):
-            for j in range(size):
-                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])
-    return dist
+def get_all_nodes_shortest_path_sizes(graph, unweighted=True):
+    nx.all_pairs_shortest_path(graph)
 
 
 #TODO(izabela): Call this function only if the edge is not a bridge
