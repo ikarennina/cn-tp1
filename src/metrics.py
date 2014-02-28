@@ -127,7 +127,11 @@ def get_edge_span(graph, edge):
     return float('Inf')
 
 
-def get_local_cluster_coeff(graph, node_id):
+def get_all_nodes_cluster_coeffs(graph):
+    return [cc for cc in (get_cluster_coeff(graph, node) for node in graph) if
+            cc]
+
+def get_cluster_coeff(graph, node_id):
     """Calculate local cluster coefficient.
 
     Args:
@@ -144,15 +148,24 @@ def get_local_cluster_coeff(graph, node_id):
     #disconsider self loops
     if node_id in neighbors:
         neighbors.remove(node_id)
-    if len(neighbors) == 1:
+    if len(neighbors) < 2:
         return None
-    count = 0.0
+    count = 0
     candidates = permutations(neighbors, 2) if graph.is_directed() else \
         combinations(neighbors, 2)
     for edge in candidates:
         if graph.has_edge(*edge):
             count += 1
-    return count/(len(neighbors) * (len(neighbors) - 1))
+    return float(count)/(len(neighbors) * (len(neighbors) - 1))
+
+def get_strongly_ccs_sizes(graph):
+    ccs = nx.strongly_connected_components(graph)
+    return [len(cc) for cc in ccs]
+
+
+def get_connected_comp_sizes(graph):
+    ccs = nx.connected_components(graph)
+    return [len(cc) for cc in ccs]
 
 
 def get_nodes_degrees(graph):
