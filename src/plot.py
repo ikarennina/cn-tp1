@@ -19,6 +19,7 @@ def drop_outliers(data):
 
 def plot_degree_dist(in_degrees, out_degrees, total_degrees):
     in_degrees = drop_outliers(in_degrees)
+    out_degrees = drop_outliers(out_degrees)
     total_degrees = drop_outliers(total_degrees)
     maxin = max(in_degrees)
     maxout = max(out_degrees)
@@ -26,29 +27,28 @@ def plot_degree_dist(in_degrees, out_degrees, total_degrees):
 
     pl.figure()
     pl.subplot(3, 1, 1)
-    pl.hist(in_degrees, bins=scipy.arange(0, maxin + 2) - 0.5, normed=True,
+    pl.hist(in_degrees, bins=scipy.arange(0, maxin + 2, 1) - 0.5, normed=True,
             color='.5')
-    pl.xlim(-0.5, maxin + 0.5)
-    pl.ylim(0, 0.225)
-    pl.xticks(range(maxin + 1))
-    pl.yticks(scipy.arange(0, 0.3, 0.1))
+    pl.xlim(-0.5, 14)
+    pl.xticks(range(0, 15, 2))
+    pl.yticks(scipy.arange(0, 1, 0.2))
     pl.xlabel('in-degree')
 
     pl.subplot(3, 1, 2)
-    pl.hist(out_degrees, bins=scipy.arange(0, maxout + 2) - 0.5, normed=True,
+    pl.hist(out_degrees, bins=scipy.arange(0, maxout + 2, 1) - 0.5, normed=True,
             color='.5')
-    pl.xlim(-0.5, maxout + 0.5)
-    pl.xticks(range(maxout + 1))
+    pl.xlim(-0.5, 20)
+    pl.xticks(range(0, 21, 2))
     pl.xlabel('out-degree')
-    pl.yticks(scipy.arange(0, 1.1, 0.2))
+    pl.yticks(scipy.arange(0, .6, 0.2))
     pl.ylabel('fraction of nodes')
 
     pl.subplot(3, 1, 3)
-    pl.hist(total_degrees, bins=scipy.arange(0, maxtot + 2) - 0.5, normed=True,
+    pl.hist(total_degrees, bins=scipy.arange(0, maxtot + 2, 1) - 0.5, normed=True,
             color='.5')
-    pl.xlim(-0.5, maxtot + 0.5)
-    pl.xticks(range(maxtot + 1))
-    pl.yticks(scipy.arange(0, 0.3, 0.1))
+    pl.xlim(-0.5, 20)
+    pl.xticks(range(0, 21, 2))
+    pl.yticks(scipy.arange(0, .6, 0.2))
     pl.xlabel('total degree')
 
     pl.subplots_adjust(hspace=0.7, right=0.7)
@@ -69,12 +69,15 @@ def plot_clust_coeff_dist(clus_coeffs):
 
 
 def plot_strongly_ccs_dist(ccs_sizes):
-    ccs_sizes = drop_outliers(ccs_sizes)
     max_size = max(ccs_sizes)
     counter = collections.Counter(ccs_sizes)
+    if len(counter.keys()) < 5:
+        print 'Data distribution not suitable for plotting.'
+        print counter
+        return
     pl.figure()
     pl.hist(ccs_sizes, normed=True,
-            color='.5', bins=sorted(counter.keys())[:15])
+            color='.5')
     pl.xlabel('number of nodes')
     #pl.show()
     pl.savefig(os.path.join(os.path.dirname(__file__),
@@ -82,34 +85,34 @@ def plot_strongly_ccs_dist(ccs_sizes):
 
 
 def plot_connected_comp_dist(ccs_sizes):
-    print ccs_sizes
-    return
-    ccs_sizes = drop_outliers(ccs_sizes)
     max_size = max(ccs_sizes)
     counter = collections.Counter(ccs_sizes)
+    if len(counter.keys()) < 5:
+        print 'Data distribution not suitable for plotting.'
+        print counter
+        return
     pl.figure()
     pl.hist(ccs_sizes, normed=True,
             color='.5', bins=sorted(counter.keys()))
     pl.xlabel('number of nodes')
-    #pl.show()
-    pl.savefig(os.path.join(os.path.dirname(__file__),
-        '../output/conn_comp_distribution.png'), bbox_inches='tight')
+    pl.show()
+    #pl.savefig(os.path.join(os.path.dirname(__file__),
+    #    '../output/conn_comp_distribution.png'), bbox_inches='tight')
 
 
 def plot_neigh_overlap_dist(neigh_overlaps):
     pl.figure()
     max_over = max(neigh_overlaps)
-    print scipy.arange(0, max_over, .1)
-    pl.hist(neigh_overlaps, bins=scipy.arange(0, max(neigh_overlaps)-.2, .1), normed=True,
+    pl.hist(neigh_overlaps, bins=scipy.arange(0, max_over + .1, .1), normed=True,
             color='.5')
     pl.xticks(scipy.arange(0, max_over, .1))
     #pl.show()
     pl.savefig(os.path.join(os.path.dirname(__file__),
         '../output/neigh_overlap_distribution.png'), bbox_inches='tight')
     pl.figure()
-    pl.hist(neigh_overlaps, bins=scipy.arange(0, max_over-.1, .1), normed=True,
+    pl.hist(neigh_overlaps, bins=scipy.arange(0, max_over + .1, .1), normed=True,
             color='.5', cumulative=True)
-    pl.xticks(scipy.arange(0, max_over-.1, .1))
+    pl.xticks(scipy.arange(0, max_over + .1, .1))
     #pl.show()
     pl.savefig(os.path.join(os.path.dirname(__file__),
         '../output/neigh_overlap_acc_distribution.png'), bbox_inches='tight')
@@ -117,16 +120,27 @@ def plot_neigh_overlap_dist(neigh_overlaps):
 
 def plot_graph(graph, limit=100):
     pl.figure()
-    scc = max(nx.strongly_connected_component_subgraphs())
-    nx.draw(scc)
+    nx.draw(graph)
     pl.savefig(os.path.join(os.path.dirname(__file__),
         '../output/subgraph.png'), bbox_inches='tight')
+
+
+def plot_distances_dist(distances):
+    max_size = max(distances)
+    pl.figure()
+    pl.hist(distances, normed=True,
+            color='.5', bins=scipy.arange(0, max_size + .5))
+    pl.xlabel('hops')
+    #pl.show()
+    pl.savefig(os.path.join(os.path.dirname(__file__),
+        '../output/distances_dist.png'), bbox_inches='tight')
 
 
 def main():
     """"Main function of the module."""
     graph = \
-        nx.read_gpickle('/Users/bela/UFMG/redesComplexas/cn-tp1/data/amazon0302.gpickle')
+        nx.read_gpickle(os.path.join(os.path.dirname(__file__),
+            '../data/wiki-vote.gpickle'))
     print '----- Finished reading graph -----'
     #total_degrees, in_degrees, out_degrees = metrics.get_nodes_degrees(graph)
     #plot_degree_dist(in_degrees, out_degrees, total_degrees)
@@ -134,20 +148,20 @@ def main():
     #print scipy.mean(clus_coeffs)
     #plot_clust_coeff_dist(clus_coeffs)
     #if nx.is_directed(graph):
-    #    strong_ccs_sizes = metrics.get_strongly_ccs_sizes(graph)
-    #    plot_strongly_ccs_dist(strong_ccs_sizes)
-    #    unidrected_graph = graph.to_undirected()
-    #    conn_comp_sizes = metrics.get_connected_comp_sizes(unidrected_graph)
+        #strong_ccs_sizes = metrics.get_strongly_ccs_sizes(graph)
+        #plot_strongly_ccs_dist(strong_ccs_sizes)
+        #unidrected_graph = graph.to_undirected()
+        #conn_comp_sizes = metrics.get_connected_comp_sizes(unidrected_graph)
     #else:
-    #    conn_comp_sizes = metrics.get_connected_comp_sizes(graph)
-    #if len(conn_com_sizes) > 1:
-    #    plot_connected_comp_dist(conn_comp_sizes)
+        #conn_comp_sizes = metrics.get_connected_comp_sizes(graph)
+    #if len(conn_comp_sizes) > 1:
+        #plot_connected_comp_dist(conn_comp_sizes)
     #else:
-    #    print 'There is only one connected component in the undirected graph.'
+        #print 'There is only one connected component in the undirected graph.'
     #neigh_overlaps = metrics.get_neighborhood_overlap(graph).values()
     #plot_neigh_overlap_dist(neigh_overlaps)
-    
-   # plot_distance_dist()
+    #distances = metrics.get_all_nodes_shortest_paths_sizes(graph) 
+    #plot_distances_dist(distances)
    # plot_edges_betweeness()
    # plot_nodes_betweeness()
    # find_bridges()

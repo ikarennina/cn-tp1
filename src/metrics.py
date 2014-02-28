@@ -65,11 +65,13 @@ def get_connected_components_sizes(graph):
     return sizes
 
 
-def get_all_nodes_shortest_path_sizes(graph, unweighted=True):
-    nx.all_pairs_shortest_path(graph)
+def get_all_nodes_shortest_paths_sizes(graph, unweighted=True):
+    if unweighted == False:
+        raise NotImplementedError
+    paths = nx.all_pairs_shortest_path(graph)
+    return [len(x.values()[0]) for x in paths.values()]
 
 
-#TODO(izabela): Call this function only if the edge is not a bridge
 def get_edge_span(graph, edge):
     """Get the span of an edge.
 
