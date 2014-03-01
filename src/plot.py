@@ -118,9 +118,9 @@ def plot_neigh_overlap_dist(neigh_overlaps):
         '../output/neigh_overlap_acc_distribution.png'), bbox_inches='tight')
 
 
-def plot_graph(graph, limit=100):
+def plot_graph(graph):
     pl.figure()
-    nx.draw(graph)
+    nx.draw_networkx(graph, with_labels=False)
     pl.savefig(os.path.join(os.path.dirname(__file__),
         '../output/subgraph.png'), bbox_inches='tight')
 
@@ -136,12 +136,30 @@ def plot_distances_dist(distances):
         '../output/distances_dist.png'), bbox_inches='tight')
 
 
+def plot_edges_betweenness_dist(betweenness):
+    betweenness = drop_outliers(betweenness)
+    pl.figure()
+    pl.hist(betweenness, normed=True, color='.5')
+    #pl.show()
+    pl.savefig(os.path.join(os.path.dirname(__file__),
+        '../output/edges_betweenness_dist.png'), bbox_inches='tight')
+
+
+def plot_nodes_betweenness_dist(betweenness):
+    betweenness = drop_outliers(betweenness)
+    pl.figure()
+    pl.hist(betweenness, normed=True, color='.5')
+    #pl.show()
+    pl.savefig(os.path.join(os.path.dirname(__file__),
+        '../output/nodes_betweenness_dist.png'), bbox_inches='tight')
+
+
 def main():
     """"Main function of the module."""
     graph = \
         nx.read_gpickle(os.path.join(os.path.dirname(__file__),
             '../data/wiki-vote.gpickle'))
-    print '----- Finished reading graph -----'
+    #print '----- Finished reading graph -----'
     #total_degrees, in_degrees, out_degrees = metrics.get_nodes_degrees(graph)
     #plot_degree_dist(in_degrees, out_degrees, total_degrees)
     #clus_coeffs = metrics.get_all_nodes_cluster_coeffs(graph)
@@ -150,8 +168,8 @@ def main():
     #if nx.is_directed(graph):
         #strong_ccs_sizes = metrics.get_strongly_ccs_sizes(graph)
         #plot_strongly_ccs_dist(strong_ccs_sizes)
-        #unidrected_graph = graph.to_undirected()
-        #conn_comp_sizes = metrics.get_connected_comp_sizes(unidrected_graph)
+        #undirected_graph = graph.to_undirected()
+        #conn_comp_sizes = metrics.get_connected_comp_sizes(undirected_graph)
     #else:
         #conn_comp_sizes = metrics.get_connected_comp_sizes(graph)
     #if len(conn_comp_sizes) > 1:
@@ -162,9 +180,38 @@ def main():
     #plot_neigh_overlap_dist(neigh_overlaps)
     #distances = metrics.get_all_nodes_shortest_paths_sizes(graph) 
     #plot_distances_dist(distances)
-   # plot_edges_betweeness()
-   # plot_nodes_betweeness()
-   # find_bridges()
+    #edges_betweenness = metrics.get_edges_betweenness(graph)
+    ##nx.write_gpickle(edges_betweenness, os.path.join(os.path.dirname(__file__),
+    ##        '../data/betweenness.gpickle'))
+    ##edges_betweenness = nx.read_gpickle(os.path.join(os.path.dirname(__file__),
+    ##        '../data/betweenness.gpickle'))
+    #plot_edges_betweenness_dist(edges_betweenness) 
+    #nodes_betweenness = metrics.get_nodes_betweenness(graph)
+    ##nx.write_gpickle(nodes_betweenness, os.path.join(os.path.dirname(__file__),
+    ##        '../data/nodes_betweenness.gpickle'))
+    ##nodes_betweenness = nx.read_gpickle(os.path.join(os.path.dirname(__file__),
+    ##        '../data/nodes_betweenness.gpickle'))
+    #plot_nodes_betweenness_dist(nodes_betweenness)
+    #bridges2 = [bridge for bridge in metrics.get_bridges(graph)]
+    #print len(bridges2)
+    #nx.write_gpickle(bridges2, os.path.join(os.path.dirname(__file__),
+    #        '../data/bridges2.gpickle'))
+    #bridges3 = [bridge for bridge in metrics.get_bridges(graph, threshold=3)]
+    #print len(bridges3)
+    #nx.write_gpickle(bridges3, os.path.join(os.path.dirname(__file__),
+    #        '../data/bridges3.gpickle'))
+    #bridges4 = [bridge for bridge in metrics.get_bridges(graph, threshold=4)]
+    #print len(bridges4)
+    #nx.write_gpickle(bridges4, os.path.join(os.path.dirname(__file__),
+    #        '../data/bridges4.gpickle'))
+    #bridges5 = [bridge for bridge in metrics.get_bridges(graph, threshold=5)]
+    #print len(bridges5)
+    #nx.write_gpickle(bridges5, os.path.join(os.path.dirname(__file__),
+    #        '../data/bridges5.gpickle'))
+    bridges6 = [bridge for bridge in metrics.get_bridges(graph, threshold=6)]
+    print len(bridges6)
+    nx.write_gpickle(bridges6, os.path.join(os.path.dirname(__file__),
+            '../data/bridges6.gpickle'))
     #plot_graph(graph)
 
 

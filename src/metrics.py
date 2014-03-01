@@ -9,6 +9,12 @@ import scipy
 import networkx as nx
 
 
+def get_bridges(graph, threshold=2):
+    for edge in graph.edges():
+        if get_edge_span(graph, edge) > threshold:
+            yield edge
+
+
 def get_neighborhood_overlap(graph):
     """Get the neighboorhood overlap for each edge.
 
@@ -70,6 +76,14 @@ def get_all_nodes_shortest_paths_sizes(graph, unweighted=True):
         raise NotImplementedError
     paths = nx.all_pairs_shortest_path(graph)
     return [len(x.values()[0]) for x in paths.values()]
+
+def get_edges_betweenness(graph):
+    betweenness = nx.edge_betweenness_centrality(graph)
+    return betweenness.values()
+
+def get_nodes_betweenness(graph):
+    betweenness = nx.betweenness_centrality(graph)
+    return betweenness.values()
 
 
 def get_edge_span(graph, edge):
